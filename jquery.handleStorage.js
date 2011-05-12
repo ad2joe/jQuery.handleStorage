@@ -35,7 +35,7 @@
  $.fn.handleStorage = function(method) {
 
   /* defined methods */
-  methods = {
+  var methods = {
 
    /* primary method of usage */
    init: function(options){
@@ -51,6 +51,13 @@
 
     /* merge specified options with defaults */
     var opts = $.extend({}, defaults, options);
+
+    /* if AES option enabled catch errors (this should be expanded as a function to test all options */
+    if (opts.aes){
+     if (typeof GibberishAES!=='function'){
+      alert('AES use specified but required libraries not available. Please include the Gibberish-AES libs...');
+     }
+    }
 
     /* perform aes key setting/getting */
     $.handleKey(opts);
@@ -201,9 +208,14 @@
    return ((string===false)||(string.length===0)||(!string)||(string===null)||(string==='')||(typeof string==='undefined')) ? false : true;
   }
 
-  /* validate localStorage/localSession functionality */
-  $.validateStorage = function(type) {
-   return ((window[type])&&(typeof window[type]=='object')) ? true : false;
+  /* validate localStorage/localSession functionality (a better way to do this?) */
+  $.validateStorage = function(type){
+   try {
+    return ((type in window)&&(window[type])) ? true : false;
+   } catch (e) {
+    return false;
+   }
+   //return ((window[type])&&(typeof window[type]==='object')) ? true : false;
   }
 
   /* generate a uuid (RFC-4122) */
