@@ -52,36 +52,44 @@
     /* merge specified options with defaults */
     var opts = $.extend({}, defaults, options);
 
-    /* if AES option enabled catch errors (this should be expanded as a function to test all options */
-    if (opts.aes){
-     if (typeof GibberishAES!=='function'){
-      alert('AES use specified but required libraries not available. Please include the Gibberish-AES libs...');
+    /* validate options specified */
+    if ($.validateOptions(opts)){
+
+     /* perform aes key setting/getting */
+     $.handleKey(opts);
+
+     /* try to get existing storage items */
+     var orig = $.getStorage(opts);
+
+     /* if they exist attempt to populate the form or wait for form submit to save data */
+     if ((typeof orig==='object')&&($.size(orig)>0)){
+      $.setForm(opts, orig);
      }
+     $('#'+opts.form).live('submit', function(e){
+      $.saveForm(opts);
+     });
+     return true;
+    } else {
+     return false;
     }
-
-    /* perform aes key setting/getting */
-    $.handleKey(opts);
-
-    /* try to get existing storage items */
-    var orig = $.getStorage(opts);
-
-    /* if they exist attempt to populate the form or wait for form submit to save data */
-    if ((typeof orig==='object')&&($.size(orig)>0)){
-     $.setForm(opts, orig);
-    }
-    $('#'+opts.form).live('submit', function(e){
-     $.saveForm(opts);
-    });
    },
 
    /* handle getting of individual form elements */
    get: function(opts){
-    return ((opts.aes)&&(opts.key)) ? GibberishAES.dec($.getItem(opts.storage, opts.k), opts.key) : $.getItem(opts.storage, opts.k);
+    if ($.validateOptions(opts)){
+     return ((opts.aes)&&(opts.key)) ? GibberishAES.dec($.getItem(opts.storage, opts.k), opts.key) : $.getItem(opts.storage, opts.k);
+    } else {
+     return false;
+    }
    },
 
    /* handle setting of individual form elements */
    set: function(opts){
-    return ((opts.aes)&&(opts.key)) ? $.setItem(opts.storage, opts.k, GibberishAES.enc(opts.v, opts.key)) : $.setItem(opts.storage, opts.k, opts.v);
+    if ($.validateOptions(opts)){
+     return ((opts.aes)&&(opts.key)) ? $.setItem(opts.storage, opts.k, GibberishAES.enc(opts.v, opts.key)) : $.setItem(opts.storage, opts.k, opts.v);
+    } else {
+     return false;
+    }
    }
   };
 
@@ -204,7 +212,7 @@
   }
 
   /* validate string integrity */
-  $.validateString = function(string) {
+  $.validateString = function(string){
    return ((string===false)||(string.length===0)||(!string)||(string===null)||(string==='')||(typeof string==='undefined')) ? false : true;
   }
 
@@ -215,7 +223,24 @@
    } catch (e) {
     return false;
    }
-   //return ((window[type])&&(typeof window[type]==='object')) ? true : false;
+  }
+
+  /* validate options */
+  $.validateOptions = function(options){
+   var ret = true;
+   if (opts.aes){
+    if (typeof GibberishAES!=='function'){
+     console.log('AES use specified but required libraries not available. Please include the Gibberish-AES libs...');
+     ret = false;
+    }
+   }
+   if (opts.storage==='cookie'){
+    if (typeof $.cookie!=='function'){
+     console.log('Cookie use specified but required libraries not available. Please include the jQuery cookie plugin...');
+     ret = false;
+    }
+   }
+   return ret;
   }
 
   /* generate a uuid (RFC-4122) */
