@@ -229,7 +229,7 @@
   $.validateOptions = function(opts){
    var ret = true;
    if (opts.aes){
-    if (typeof GibberishAES!=='function'){
+    if (typeof GibberishAES.enc!=='function'){
      console.log('AES use specified but required libraries not available. Please include the Gibberish-AES libs...');
      ret = false;
     }
