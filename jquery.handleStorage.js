@@ -226,7 +226,7 @@
   }
 
   /* validate options */
-  $.validateOptions = function(options){
+  $.validateOptions = function(opts){
    var ret = true;
    if (opts.aes){
     if (typeof GibberishAES!=='function'){
