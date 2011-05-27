@@ -42,11 +42,10 @@
 
     /* default options */
     var defaults = {
-     appid:   'jQuery.handleStorage', // Plugin name (unique ID for local, session or cookie storage id)
-     storage: 'localStorage',         // Storage type localStorage || sessionStorage || cookie (cookie storage requires jQuery cookie plugin)
-     aes:     false,                  // Use AES encryption? (true or false)
-     uuid:    '',                     // Random RFC-4122 string used as AES password
-     form:    $(this).attr('id')      // Place holder for form ID
+     storage: 'localStorage',     // Storage type localStorage || sessionStorage || cookie (cookie storage requires jQuery cookie plugin)
+     aes:     false,              // Use AES encryption? (true or false)
+     uuid:    '',                 // Random RFC-4122 string used as AES password
+     form:    $(this).attr('id')  // Place holder for form ID
     };
 
     /* merge specified options with defaults */
@@ -69,24 +68,6 @@
       $.saveForm(opts);
      });
      return true;
-    } else {
-     return false;
-    }
-   },
-
-   /* handle getting of individual form elements */
-   get: function(opts){
-    if ($.validateOptions(opts)){
-     return ((opts.aes)&&(opts.key)) ? GibberishAES.dec($.getItem(opts.storage, opts.k), opts.key) : $.getItem(opts.storage, opts.k);
-    } else {
-     return false;
-    }
-   },
-
-   /* handle setting of individual form elements */
-   set: function(opts){
-    if ($.validateOptions(opts)){
-     return ((opts.aes)&&(opts.key)) ? $.setItem(opts.storage, opts.k, GibberishAES.enc(opts.v, opts.key)) : $.setItem(opts.storage, opts.k, opts.v);
     } else {
      return false;
     }
